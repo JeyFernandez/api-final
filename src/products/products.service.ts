@@ -9,8 +9,8 @@ import { Repository } from 'typeorm';
 export class ProductsService {
   constructor(
     @InjectRepository(Product)
-    private readonly productRepository: Repository<Product>
-  ){}
+    private readonly productRepository: Repository<Product>,
+  ) {}
 
   async create(createProductDto: CreateProductDto) {
     const product = await this.productRepository.create(createProductDto);
@@ -23,22 +23,21 @@ export class ProductsService {
   }
 
   findOne(id: string) {
-    return this.productRepository.findOneBy({id});
+    return this.productRepository.findOneBy({ id });
   }
 
   async update(id: string, updateProductDto: CreateProductDto) {
     const findCategories = await this.findOne(id);
     const updateProduct = await this.productRepository.merge(
-        findCategories,
-        updateProductDto
+      findCategories,
+      updateProductDto,
     );
-
     return this.productRepository.save(updateProduct);
   }
 
   async remove(id: string) {
     const producto = await this.findOne(id);
     await this.productRepository.remove(producto);
-    return 'Product removed successfully'
+    return 'Product removed successfully';
   }
 }
