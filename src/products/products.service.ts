@@ -1,22 +1,37 @@
-import { Injectable, Param } from '@nestjs/common';
+import { Injectable, NotFoundException, Param } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
+import { Category } from 'src/categories/entities/category.entity';
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
   ) {}
 
   async create(createProductDto: CreateProductDto) {
     try {
-      const product = await this.productRepository.create(createProductDto);
-      await this.productRepository.save(product);
-      return product;
+      const { categories, ...product } = createProductDto;
+      let categoriesModels = [];
+
+      categoriesModels = await this.categoryRepository.find({
+        where: { name: In([...createProductDto.categories]) },
+      });
+
+      const model = this.productRepository.create({
+        ...product,
+        categories: categoriesModels,
+      });
+      await this.productRepository.save(model);
+
+      return model;
     } catch (error) {
       throw new Error('error creating product please try again');
     }
@@ -39,16 +54,22 @@ export class ProductsService {
   }
 
   async update(id: string, updateProductDto: CreateProductDto) {
-    try {
-      const findCategories = await this.findOne(id);
-      const updateProduct = await this.productRepository.merge(
-        findCategories,
-        updateProductDto,
-      );
-      return this.productRepository.save(updateProduct);
-    } catch (error) {
-      throw new Error('Error updating');
+    const { categories, ...products } = updateProductDto;
+    let categoriesModels = [];
+    if (updateProductDto.categories) {
+      categoriesModels = await this.categoryRepository.find({
+        where: { name: In([...updateProductDto.categories]) },
+      });
     }
+    const product = await this.productRepository.preload({
+      id,
+      ...products,
+      categories: categoriesModels,
+    });
+    if (!product) {
+      throw new NotFoundException(`Product ${product.name} not found`);
+    }
+    return this.productRepository.save(product);
   }
 
   async remove(id: string) {
