@@ -1,26 +1,62 @@
 import { Injectable } from '@nestjs/common';
 import { CreateProviderDto } from './dto/create-provider.dto';
-import { UpdateProviderDto } from './dto/update-provider.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Provider } from './entities/provider.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ProviderService {
-  create(createProviderDto: CreateProviderDto) {
-    return 'This action adds a new provider';
+  constructor(
+    @InjectRepository(Provider)
+    private readonly providerRepository: Repository<Provider>,
+  ) {}
+
+  async create(createProviderDto: CreateProviderDto) {
+    try {
+      const provider = await this.providerRepository.create(createProviderDto);
+      await this.providerRepository.save(provider);
+      return provider;
+    } catch (error) {
+      throw new Error('error creating provider please check and try again');
+    }
   }
 
   findAll() {
-    return `This action returns all provider`;
+    try {
+      return this.providerRepository.find();
+    } catch (error) {
+      throw new Error('Error finding provider');
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} provider`;
+  findOne(id: string) {
+    try {
+      return this.providerRepository.findOneBy({ id });
+    } catch (error) {
+      throw new Error('Error getting one providers');
+    }
   }
 
-  update(id: number, updateProviderDto: UpdateProviderDto) {
-    return `This action updates a #${id} provider`;
+  async update(id: string, updateProviderDto: CreateProviderDto) {
+    try {
+      const findProvider = await this.providerRepository.findOneBy({ id });
+      const updateProvider = await this.providerRepository.merge(
+        findProvider,
+        updateProviderDto,
+      );
+      return this.providerRepository.save(updateProvider);
+    } catch (error) {
+      throw new Error('Error when updating provider please try again');
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} provider`;
+  async remove(id: string) {
+    try {
+      const provider = await this.findOne(id);
+      await this.providerRepository.remove(provider);
+      return `provider ${provider.name} is removed successfully`;
+    } catch (error) {
+      throw new Error('Error removing provider');
+    }
   }
 }

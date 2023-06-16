@@ -13,31 +13,51 @@ export class WorkersService {
   ) {}
 
   async create(createWorkerDto: CreateWorkerDto) {
-    const worker = await this.workerRepository.create(createWorkerDto);
-    await this.workerRepository.save(worker);
-    return worker;
+    try {
+      const worker = await this.workerRepository.create(createWorkerDto);
+      await this.workerRepository.save(worker);
+      return worker;
+    } catch (error) {
+      throw new Error('Error creating worker');
+    }
   }
 
   findAll() {
-    return this.workerRepository.find();
+    try {
+      return this.workerRepository.find();
+    } catch (error) {
+      throw new Error('Error find all worker');
+    }
   }
 
   findOne(id: string) {
-    return this.workerRepository.findOneBy({ id });
+    try {
+      return this.workerRepository.findOneBy({ id });
+    } catch (error) {
+      throw new Error('Error find one');
+    }
   }
 
   async update(id: string, updateWorkerDto: UpdateWorkerDto) {
-    const findWorker = await this.findOne(id);
-    const upadateWorker = await this.workerRepository.merge(
-      findWorker,
-      updateWorkerDto,
-    );
-    return this.workerRepository.save(upadateWorker);
+    try {
+      const findWorker = await this.findOne(id);
+      const upadateWorker = await this.workerRepository.merge(
+        findWorker,
+        updateWorkerDto,
+      );
+      return this.workerRepository.save(upadateWorker);
+    } catch (error) {
+      throw new Error('error updating worker');
+    }
   }
 
   async remove(id: string) {
-    const worker = await this.findOne(id);
-    await this.workerRepository.remove(worker);
-    return `The worker: #${worker.name} is deleted successfully`;
+    try {
+      const worker = await this.findOne(id);
+      await this.workerRepository.remove(worker);
+      return `The worker: #${worker.name} is deleted successfully`;
+    } catch (error) {
+      throw new Error('error removing worker');
+    }
   }
 }

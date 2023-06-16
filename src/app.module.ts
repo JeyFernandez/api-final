@@ -17,7 +17,7 @@ import { ProviderModule } from './provider/provider.module';
       port: 5432,
       username: 'postgres',
       password: '12345678',
-      database: 'pruevasDB',
+      database: 'cacaoDB',
       entities: [],
       synchronize: true,
       autoLoadEntities: true,

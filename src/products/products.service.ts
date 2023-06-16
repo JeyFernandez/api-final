@@ -13,31 +13,51 @@ export class ProductsService {
   ) {}
 
   async create(createProductDto: CreateProductDto) {
-    const product = await this.productRepository.create(createProductDto);
-    await this.productRepository.save(product);
-    return product;
+    try {
+      const product = await this.productRepository.create(createProductDto);
+      await this.productRepository.save(product);
+      return product;
+    } catch (error) {
+      throw new Error('error creating product please try again');
+    }
   }
 
   findAll() {
-    return this.productRepository.find();
+    try {
+      return this.productRepository.find();
+    } catch (error) {
+      throw new Error('error find alll product');
+    }
   }
 
   findOne(id: string) {
-    return this.productRepository.findOneBy({ id });
+    try {
+      return this.productRepository.findOneBy({ id });
+    } catch (error) {
+      throw new Error('error find one product');
+    }
   }
 
   async update(id: string, updateProductDto: CreateProductDto) {
-    const findCategories = await this.findOne(id);
-    const updateProduct = await this.productRepository.merge(
-      findCategories,
-      updateProductDto,
-    );
-    return this.productRepository.save(updateProduct);
+    try {
+      const findCategories = await this.findOne(id);
+      const updateProduct = await this.productRepository.merge(
+        findCategories,
+        updateProductDto,
+      );
+      return this.productRepository.save(updateProduct);
+    } catch (error) {
+      throw new Error('Error updating');
+    }
   }
 
   async remove(id: string) {
-    const producto = await this.findOne(id);
-    await this.productRepository.remove(producto);
-    return 'Product removed successfully';
+    try {
+      const producto = await this.findOne(id);
+      await this.productRepository.remove(producto);
+      return 'Product removed successfully';
+    } catch (error) {
+      throw new Error('error when removing product');
+    }
   }
 }
