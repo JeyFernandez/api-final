@@ -55,7 +55,7 @@ export class WorkersService {
     try {
       const worker = await this.findOne(id);
       await this.workerRepository.remove(worker);
-      return `The worker: #${worker.name} is deleted successfully`;
+      return `The worker: ${worker.name} is deleted successfully`;
     } catch (error) {
       throw new Error('error removing worker');
     }
