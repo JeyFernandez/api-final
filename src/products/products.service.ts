@@ -33,7 +33,7 @@ export class ProductsService {
 
       return model;
     } catch (error) {
-      throw new Error('error creating product please try again');
+      throw new Error('error creating product');
     }
   }
 
