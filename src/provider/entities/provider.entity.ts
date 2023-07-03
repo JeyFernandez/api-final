@@ -12,6 +12,8 @@ export class Provider {
   phone: number;
 
   @Column({ type: 'varchar' })
+  email: string;
+  @Column({ type: 'varchar' })
   direction: string;
 
   @Column({ type: 'varchar' })
