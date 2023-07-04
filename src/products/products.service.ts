@@ -17,25 +17,31 @@ export class ProductsService {
   ) {}
 
   async create(createProductDto: CreateProductDto) {
-    const { categories, ...product } = createProductDto;
-    let categoriesModels = [];
+    try {
+      const { categories, ...product } = createProductDto;
+      let categoriesModels = [];
 
-    categoriesModels = await this.categoryRepository.find({
-      where: { name: In([...createProductDto.categories]) },
-    });
+      categoriesModels = await this.categoryRepository.find({
+        where: { name: In([...createProductDto.categories]) },
+      });
 
-    const model = this.productRepository.create({
-      ...product,
-      categories: categoriesModels,
-    });
-    await this.productRepository.save(model);
+      const model = this.productRepository.create({
+        ...product,
+        categories: categoriesModels,
+      });
+      await this.productRepository.save(model);
+
+      return model;
+    } catch (error) {
+      throw new NotFoundException('error creating product');
+    }
   }
 
   findAll() {
     try {
       return this.productRepository.find();
     } catch (error) {
-      throw new Error('error find alll product');
+      throw new NotFoundException('error finding products');
     }
   }
 
@@ -72,7 +78,7 @@ export class ProductsService {
       await this.productRepository.remove(producto);
       return 'Product removed successfully';
     } catch (error) {
-      throw new Error('error when removing product');
+      throw new NotFoundException('error removing product');
     }
   }
 }
