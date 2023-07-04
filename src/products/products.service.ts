@@ -17,24 +17,18 @@ export class ProductsService {
   ) {}
 
   async create(createProductDto: CreateProductDto) {
-    try {
-      const { categories, ...product } = createProductDto;
-      let categoriesModels = [];
+    const { categories, ...product } = createProductDto;
+    let categoriesModels = [];
 
-      categoriesModels = await this.categoryRepository.find({
-        where: { name: In([...createProductDto.categories]) },
-      });
+    categoriesModels = await this.categoryRepository.find({
+      where: { name: In([...createProductDto.categories]) },
+    });
 
-      const model = this.productRepository.create({
-        ...product,
-        categories: categoriesModels,
-      });
-      await this.productRepository.save(model);
-
-      return model;
-    } catch (error) {
-      throw new Error('error creating product');
-    }
+    const model = this.productRepository.create({
+      ...product,
+      categories: categoriesModels,
+    });
+    await this.productRepository.save(model);
   }
 
   findAll() {
