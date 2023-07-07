@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateWorkerDto } from './dto/create-worker.dto';
 import { UpdateWorkerDto } from './dto/update-worker.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -18,7 +18,7 @@ export class WorkersService {
       await this.workerRepository.save(worker);
       return worker;
     } catch (error) {
-      throw new Error('Error creating worker');
+      throw new NotFoundException('error creating worker');
     }
   }
 
@@ -26,7 +26,7 @@ export class WorkersService {
     try {
       return this.workerRepository.find();
     } catch (error) {
-      throw new Error('Error find all worker');
+      throw new NotFoundException('error finding workers');
     }
   }
 
@@ -34,7 +34,7 @@ export class WorkersService {
     try {
       return this.workerRepository.findOneBy({ id });
     } catch (error) {
-      throw new Error('Error find one');
+      throw new NotFoundException('error find one worker');
     }
   }
 
@@ -47,7 +47,7 @@ export class WorkersService {
       );
       return this.workerRepository.save(upadateWorker);
     } catch (error) {
-      throw new Error('error updating worker');
+      throw new NotFoundException('error updating worker');
     }
   }
 
@@ -57,7 +57,7 @@ export class WorkersService {
       await this.workerRepository.remove(worker);
       return `The worker: ${worker.name} is deleted successfully`;
     } catch (error) {
-      throw new Error('error removing worker');
+      throw new NotFoundException('error deleting worker');
     }
   }
 }
